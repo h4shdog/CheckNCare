@@ -51,8 +51,17 @@ class FecalViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val result = classifier.classify(bitmap)
 
-            // If confidence is below 60%, treat it as Unknown and skip saving to history
-            val effectiveLabel = if (result.confidence < 0.60f) "Unknown" else result.label
+            // Dual rejection guard:
+            //  1. Confidence threshold — top class must be ≥ 80%
+            //  2. Entropy check — if probabilities are spread too evenly the
+            //     image is likely not a fecal sample at all (max entropy for
+            //     4 classes = ln(4) ≈ 1.386; we reject above 0.8)
+            val entropy = result.probabilities.fold(0f) { acc, p ->
+                if (p > 0f) acc - p * Math.log(p.toDouble()).toFloat() else acc
+            }
+            val isUnknown = result.confidence < 0.70f || entropy > 0.8f
+
+            val effectiveLabel = if (isUnknown) "Unknown" else result.label
             val (recEn, recTl) = getRecommendations(effectiveLabel)
 
             val predictionResult = FecalPredictionResult(
@@ -89,8 +98,8 @@ class FecalViewModel(application: Application) : AndroidViewModel(application) {
                 "Posibleng Salmonella Infection. Sundin ang biosecurity protocols at kumonsulta sa beterinaryo."
             )
             else -> Pair(
-                "Unable to determine condition. Please retake a proper fecal image and try again.",
-                "Hindi matukoy ang kondisyon. Kumuha muli ng maayos na larawan ng dumi at subukang muli."
+                "Image does not appear to be a valid fecal sample or confidence is too low. Please take a clear, close-up photo of the chicken fecal and try again.",
+                "Mukhang hindi ito isang tamang larawan ng dumi o masyadong mababa ang katiyakan. Kumuha ng malinaw at malapit na larawan ng dumi ng manok at subukang muli."
             )
         }
     }

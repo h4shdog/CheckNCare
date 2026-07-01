@@ -66,7 +66,7 @@ class FecalClassifier(private val context: Context) {
             else -> "Unknown"
         }
 
-        return FecalResult(label, confidence)
+        return FecalResult(label, confidence, probabilities)
     }
 
     fun close() {
@@ -74,4 +74,4 @@ class FecalClassifier(private val context: Context) {
     }
 }
 
-data class FecalResult(val label: String, val confidence: Float)
+data class FecalResult(val label: String, val confidence: Float, val probabilities: FloatArray)
