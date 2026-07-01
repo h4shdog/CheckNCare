@@ -59,7 +59,7 @@ class FecalViewModel(application: Application) : AndroidViewModel(application) {
             val entropy = result.probabilities.fold(0f) { acc, p ->
                 if (p > 0f) acc - p * Math.log(p.toDouble()).toFloat() else acc
             }
-            val isUnknown = result.confidence < 0.70f || entropy > 0.8f
+            val isUnknown = result.confidence < 0.60f || entropy > 0.8f
 
             val effectiveLabel = if (isUnknown) "Unknown" else result.label
             val (recEn, recTl) = getRecommendations(effectiveLabel)
