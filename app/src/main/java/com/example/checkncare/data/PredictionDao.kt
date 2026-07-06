@@ -17,6 +17,13 @@ interface PredictionDao {
     @Query("DELETE FROM prediction_history")
     fun deleteAllRecords()
 
-    @Query("SELECT * FROM prediction_history WHERE result LIKE '%' || :searchQuery || '%' OR type LIKE '%' || :searchQuery || '%' ORDER BY id DESC")
-    fun searchRecords(searchQuery: String): Flow<List<PredictionRecord>>
+    @Query("""
+        SELECT * FROM prediction_history 
+        WHERE result LIKE '%' || :q || '%' 
+           OR type   LIKE '%' || :q || '%'
+           OR date   LIKE '%' || :q || '%'
+           OR time   LIKE '%' || :q || '%'
+        ORDER BY id DESC
+    """)
+    fun searchRecords(q: String): Flow<List<PredictionRecord>>
 }
