@@ -105,7 +105,7 @@ fun AboutScreen(navController: NavController) {
                         "Kotlin & Jetpack Compose",
                         "TensorFlow Lite (MobileNetV3)",
                         "SQLite Database",
-                        "CameraX",
+                        "Camera (Image Capturing)",
                         "Microphone (Audio Recording)"
                     ))
 
