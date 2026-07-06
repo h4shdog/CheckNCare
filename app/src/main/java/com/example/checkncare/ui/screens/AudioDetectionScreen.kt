@@ -21,9 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -82,7 +80,7 @@ fun AudioDetectionScreen(
                 )
             )
         },
-        containerColor = OffWhite
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -97,7 +95,9 @@ fun AudioDetectionScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape    = RoundedCornerShape(16.dp),
-                colors   = CardDefaults.cardColors(containerColor = PaleRed)
+                colors   = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Row(
                     modifier          = Modifier.padding(16.dp),
@@ -107,13 +107,13 @@ fun AudioDetectionScreen(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(CrimsonRed.copy(alpha = 0.15f)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Mic,
                             contentDescription = null,
-                            tint     = CrimsonRed,
+                            tint     = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -121,7 +121,7 @@ fun AudioDetectionScreen(
                     Text(
                         text  = strings.audioInfoText,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = DeepRed
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -133,13 +133,13 @@ fun AudioDetectionScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
-                        .background(ErrorRed.copy(alpha = 0.12f))
+                        .background(MaterialTheme.colorScheme.errorContainer)
                         .padding(horizontal = 20.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text       = strings.audioRecordingLabel,
                         style      = MaterialTheme.typography.labelLarge,
-                        color      = ErrorRed,
+                        color      = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -153,14 +153,14 @@ fun AudioDetectionScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier    = Modifier.size(48.dp),
-                        color       = CrimsonRed,
+                        color       = MaterialTheme.colorScheme.primary,
                         strokeWidth = 4.dp
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         strings.audioAnalyzingLabel,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecond
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -173,14 +173,15 @@ fun AudioDetectionScreen(
                     CircularProgressIndicator(
                         modifier    = Modifier.fillMaxSize(),
                         strokeWidth = 6.dp,
-                        color       = CrimsonRed.copy(alpha = 0.35f)
+                        color       = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
                     )
                 }
                 FloatingActionButton(
                     onClick        = { onMicButtonClicked() },
                     modifier       = Modifier.size(120.dp),
                     shape          = CircleShape,
-                    containerColor = if (state.isRecording) ErrorRed else CrimsonRed,
+                    containerColor = if (state.isRecording) MaterialTheme.colorScheme.error
+                                     else MaterialTheme.colorScheme.primary,
                     elevation      = FloatingActionButtonDefaults.elevation(
                         defaultElevation = if (state.isRecording) 2.dp else 10.dp
                     )
@@ -198,7 +199,7 @@ fun AudioDetectionScreen(
             Text(
                 text  = if (state.isRecording) strings.audioTapToStop else strings.audioTapToRecord,
                 style = MaterialTheme.typography.labelMedium,
-                color = TextHint
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(24.dp))
@@ -211,7 +212,9 @@ fun AudioDetectionScreen(
                 Card(
                     modifier  = Modifier.fillMaxWidth(),
                     shape     = RoundedCornerShape(16.dp),
-                    colors    = CardDefaults.cardColors(containerColor = SoftRed),
+                    colors    = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Row(
@@ -219,18 +222,18 @@ fun AudioDetectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text       = "⚠",
-                            style      = MaterialTheme.typography.titleLarge,
-                            color      = ErrorRed,
-                            modifier   = Modifier.padding(end = 12.dp)
+                            text     = "⚠",
+                            style    = MaterialTheme.typography.titleLarge,
+                            color    = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(end = 12.dp)
                         )
                         Text(
-                            text      = strings.audioTooShort,
-                            style     = MaterialTheme.typography.bodyMedium,
-                            color     = ErrorRed,
+                            text       = strings.audioTooShort,
+                            style      = MaterialTheme.typography.bodyMedium,
+                            color      = MaterialTheme.colorScheme.onErrorContainer,
                             fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier  = Modifier.weight(1f)
+                            textAlign  = TextAlign.Start,
+                            modifier   = Modifier.weight(1f)
                         )
                     }
                 }
@@ -265,8 +268,8 @@ fun PredictionResultCard(
     recommendationTl: String,
     isEnglish       : Boolean,
     strings         : AppStrings,
-    descriptionEn   : String = "",
-    descriptionTl   : String = "",
+    descriptionEn   : String       = "",
+    descriptionTl   : String       = "",
     signsEn         : List<String> = emptyList(),
     signsTl         : List<String> = emptyList(),
     detailedRecsEn  : List<String> = emptyList(),
@@ -277,11 +280,23 @@ fun PredictionResultCard(
     treatmentTl     : List<String> = emptyList()
 ) {
     val isNormal    = label.equals("Normal", ignoreCase = true)
-    val statusColor = if (isNormal) SuccessGreen else ErrorRed
-    val statusBg    = if (isNormal) Color(0xFFE8F5E9) else SoftRed
-    val statusEmoji = if (isNormal) "✓" else "⚠"
+    val isUnknown   = label.equals("Unknown", ignoreCase = true)
+    val statusColor = when {
+        isNormal  -> SuccessGreen
+        isUnknown -> MaterialTheme.colorScheme.onSurfaceVariant
+        else      -> MaterialTheme.colorScheme.error
+    }
+    val statusBg = when {
+        isNormal  -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+        isUnknown -> MaterialTheme.colorScheme.surfaceVariant
+        else      -> MaterialTheme.colorScheme.errorContainer
+    }
+    val statusEmoji = when {
+        isNormal  -> "✓"
+        isUnknown -> "?"
+        else      -> "⚠"
+    }
 
-    // Pick the active language content
     val recommendation = if (isEnglish) recommendationEn else recommendationTl
     val description    = if (isEnglish) descriptionEn    else descriptionTl
     val signs          = if (isEnglish) signsEn          else signsTl
@@ -294,7 +309,9 @@ fun PredictionResultCard(
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         shape     = RoundedCornerShape(20.dp),
-        colors    = CardDefaults.cardColors(containerColor = PureWhite),
+        colors    = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -329,180 +346,97 @@ fun PredictionResultCard(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Disease description (only for diseases, not Normal) ──
             if (description.isNotBlank()) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    color    = DividerGray
+                    color    = MaterialTheme.colorScheme.outlineVariant
                 )
                 Text(
                     text       = strings.resultDescription,
                     style      = MaterialTheme.typography.titleMedium,
-                    color      = TextPrimary,
+                    color      = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text      = description,
                     style     = MaterialTheme.typography.bodyMedium,
-                    color     = TextPrimary,
-                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
+                    color     = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            // ── Clinical Signs ──────────────────────────────────────
             if (signs.isNotEmpty()) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    color    = DividerGray
+                    color    = MaterialTheme.colorScheme.outlineVariant
                 )
                 Text(
                     text       = strings.resultClinicalSigns,
                     style      = MaterialTheme.typography.titleMedium,
-                    color      = TextPrimary,
+                    color      = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(8.dp))
                 signs.forEach { sign ->
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier          = Modifier.padding(vertical = 3.dp)
-                    ) {
-                        Text(
-                            text      = "•",
-                            style     = MaterialTheme.typography.bodyMedium,
-                            color     = statusColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier  = Modifier.padding(end = 8.dp, top = 1.dp)
-                        )
-                        Text(
-                            text      = sign,
-                            style     = MaterialTheme.typography.bodyMedium,
-                            color     = TextPrimary,
-                            modifier  = Modifier.weight(1f)
-                        )
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 3.dp)) {
+                        Text("•", style = MaterialTheme.typography.bodyMedium, color = statusColor,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 8.dp, top = 1.dp))
+                        Text(sign, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                     }
                 }
             }
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 16.dp),
-                color    = DividerGray
-            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
 
-            // ── Recommendations ─────────────────────────────────────
             Text(
                 text       = strings.resultRecommendation,
                 style      = MaterialTheme.typography.titleMedium,
-                color      = TextPrimary,
+                color      = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(8.dp))
 
             if (detailedRecs.isNotEmpty()) {
-                // Numbered list of recommendations
                 detailedRecs.forEachIndexed { index, rec ->
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier          = Modifier.padding(vertical = 3.dp)
-                    ) {
-                        Text(
-                            text       = "${index + 1}.",
-                            style      = MaterialTheme.typography.bodyMedium,
-                            color      = statusColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier   = Modifier
-                                .width(24.dp)
-                                .padding(top = 1.dp)
-                        )
-                        Text(
-                            text     = rec,
-                            style    = MaterialTheme.typography.bodyMedium,
-                            color    = TextPrimary,
-                            modifier = Modifier.weight(1f)
-                        )
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 3.dp)) {
+                        Text("${index + 1}.", style = MaterialTheme.typography.bodyMedium, color = statusColor,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.width(24.dp).padding(top = 1.dp))
+                        Text(rec, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                     }
                 }
             } else {
-                // Fallback: single-line recommendation text
-                Text(
-                    text      = recommendation,
-                    style     = MaterialTheme.typography.bodyMedium,
-                    color     = TextPrimary,
-                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
-                )
+                Text(recommendation, style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface)
             }
 
-            // ── Prevention ──────────────────────────────────────────
             if (prevention.isNotEmpty()) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color    = DividerGray
-                )
-                Text(
-                    text       = strings.resultPrevention,
-                    style      = MaterialTheme.typography.titleMedium,
-                    color      = TextPrimary,
-                    fontWeight = FontWeight.Bold
-                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                Text(strings.resultPrevention, style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
                 prevention.forEachIndexed { index, item ->
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier          = Modifier.padding(vertical = 3.dp)
-                    ) {
-                        Text(
-                            text       = "${index + 1}.",
-                            style      = MaterialTheme.typography.bodyMedium,
-                            color      = statusColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier   = Modifier
-                                .width(24.dp)
-                                .padding(top = 1.dp)
-                        )
-                        Text(
-                            text     = item,
-                            style    = MaterialTheme.typography.bodyMedium,
-                            color    = TextPrimary,
-                            modifier = Modifier.weight(1f)
-                        )
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 3.dp)) {
+                        Text("${index + 1}.", style = MaterialTheme.typography.bodyMedium, color = statusColor,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.width(24.dp).padding(top = 1.dp))
+                        Text(item, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                     }
                 }
             }
 
-            // ── Treatment ───────────────────────────────────────────
             if (treatment.isNotEmpty()) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color    = DividerGray
-                )
-                Text(
-                    text       = strings.resultTreatment,
-                    style      = MaterialTheme.typography.titleMedium,
-                    color      = TextPrimary,
-                    fontWeight = FontWeight.Bold
-                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                Text(strings.resultTreatment, style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
                 treatment.forEachIndexed { index, item ->
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier          = Modifier.padding(vertical = 3.dp)
-                    ) {
-                        Text(
-                            text       = "${index + 1}.",
-                            style      = MaterialTheme.typography.bodyMedium,
-                            color      = statusColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier   = Modifier
-                                .width(24.dp)
-                                .padding(top = 1.dp)
-                        )
-                        Text(
-                            text     = item,
-                            style    = MaterialTheme.typography.bodyMedium,
-                            color    = TextPrimary,
-                            modifier = Modifier.weight(1f)
-                        )
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 3.dp)) {
+                        Text("${index + 1}.", style = MaterialTheme.typography.bodyMedium, color = statusColor,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.width(24.dp).padding(top = 1.dp))
+                        Text(item, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                     }
                 }
             }

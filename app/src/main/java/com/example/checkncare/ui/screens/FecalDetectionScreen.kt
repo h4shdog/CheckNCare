@@ -60,34 +60,23 @@ fun FecalDetectionScreen(
     val lang    = LocalLanguage.current
     val strings = AppStrings(lang.isEnglish)
 
-    // Clear any stale image/result from a previous visit every time this screen opens
-    LaunchedEffect(Unit) {
-        viewModel.resetState()
-    }
+    LaunchedEffect(Unit) { viewModel.resetState() }
 
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
     fun createCameraUri(): Uri? = try {
-        val file = File(
-            File(context.cacheDir, "images").also { it.mkdirs() },
-            "camera_${System.currentTimeMillis()}.jpg"
-        )
+        val file = File(File(context.cacheDir, "images").also { it.mkdirs() },
+            "camera_${System.currentTimeMillis()}.jpg")
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     } catch (e: Exception) { e.printStackTrace(); null }
 
-    val cameraLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { success ->
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) cameraImageUri?.let { uri ->
-            uriToBitmap(context, uri)?.let {
-                viewModel.onImageSelected(it.copy(Bitmap.Config.ARGB_8888, true))
-            }
+            uriToBitmap(context, uri)?.let { viewModel.onImageSelected(it.copy(Bitmap.Config.ARGB_8888, true)) }
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
             createCameraUri()?.let { uri -> cameraImageUri = uri; cameraLauncher.launch(uri) }
                 ?: Toast.makeText(context, "Could not create image file", Toast.LENGTH_SHORT).show()
@@ -96,14 +85,8 @@ fun FecalDetectionScreen(
         }
     }
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            uriToBitmap(context, it)?.let { b ->
-                viewModel.onImageSelected(b.copy(Bitmap.Config.ARGB_8888, true))
-            }
-        }
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { uriToBitmap(context, it)?.let { b -> viewModel.onImageSelected(b.copy(Bitmap.Config.ARGB_8888, true)) } }
     }
 
     Scaffold(
@@ -122,7 +105,7 @@ fun FecalDetectionScreen(
                 )
             )
         },
-        containerColor = OffWhite
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -139,10 +122,10 @@ fun FecalDetectionScreen(
                     .fillMaxWidth()
                     .height(280.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(LightGray)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .border(
                         width = if (state.selectedImage != null) 0.dp else 2.dp,
-                        color = MidGray,
+                        color = MaterialTheme.colorScheme.outline,
                         shape = RoundedCornerShape(20.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -160,27 +143,17 @@ fun FecalDetectionScreen(
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(CircleShape)
-                                .background(MidGray.copy(alpha = 0.3f)),
+                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                Icons.Default.CameraAlt,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint     = MidGray
-                            )
+                            Icon(Icons.Default.CameraAlt, contentDescription = null,
+                                modifier = Modifier.size(36.dp), tint = MaterialTheme.colorScheme.outline)
                         }
                         Spacer(Modifier.height(12.dp))
-                        Text(
-                            strings.fecalNoImage,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextHint
-                        )
-                        Text(
-                            strings.fecalUseBelow,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextHint
-                        )
+                        Text(strings.fecalNoImage, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(strings.fecalUseBelow, style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -188,16 +161,13 @@ fun FecalDetectionScreen(
             Spacer(Modifier.height(16.dp))
 
             // ── Camera / Gallery buttons ──────────────────────────────
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(
                     onClick  = { galleryLauncher.launch("image/*") },
                     modifier = Modifier.weight(1f),
                     shape    = RoundedCornerShape(12.dp),
-                    colors   = ButtonDefaults.outlinedButtonColors(contentColor = CrimsonRed),
-                    border   = BorderStroke(1.5.dp, CrimsonRed)
+                    colors   = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                    border   = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
@@ -207,16 +177,11 @@ fun FecalDetectionScreen(
                 Button(
                     onClick = {
                         val granted = ContextCompat.checkSelfPermission(
-                            context, Manifest.permission.CAMERA
-                        ) == PermissionChecker.PERMISSION_GRANTED
+                            context, Manifest.permission.CAMERA) == PermissionChecker.PERMISSION_GRANTED
                         if (granted) {
-                            createCameraUri()?.let { uri ->
-                                cameraImageUri = uri
-                                cameraLauncher.launch(uri)
-                            } ?: Toast.makeText(context, "Could not create image file", Toast.LENGTH_SHORT).show()
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
+                            createCameraUri()?.let { uri -> cameraImageUri = uri; cameraLauncher.launch(uri) }
+                                ?: Toast.makeText(context, "Could not create image file", Toast.LENGTH_SHORT).show()
+                        } else permissionLauncher.launch(Manifest.permission.CAMERA)
                     },
                     modifier = Modifier.weight(1f),
                     shape    = RoundedCornerShape(12.dp),
@@ -234,44 +199,31 @@ fun FecalDetectionScreen(
             val canAnalyze = state.selectedImage != null && !state.isAnalyzing
             Button(
                 onClick  = { if (canAnalyze) viewModel.analyzeImage() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 enabled  = canAnalyze,
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(
                     containerColor         = DeepRed,
                     contentColor           = PureWhite,
-                    disabledContainerColor = MidGray.copy(alpha = 0.45f),
+                    disabledContainerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
                     disabledContentColor   = PureWhite.copy(alpha = 0.60f)
                 )
             ) {
                 if (state.isAnalyzing) {
-                    CircularProgressIndicator(
-                        modifier    = Modifier.size(22.dp),
-                        color       = PureWhite,
-                        strokeWidth = 2.5.dp
-                    )
+                    CircularProgressIndicator(modifier = Modifier.size(22.dp), color = PureWhite, strokeWidth = 2.5.dp)
                     Spacer(Modifier.width(12.dp))
                     Text(strings.fecalAnalyzing, fontWeight = FontWeight.SemiBold, color = PureWhite)
                 } else {
-                    Text(
-                        text       = strings.fecalAnalyze,
-                        fontWeight = FontWeight.SemiBold,
-                        color      = if (canAnalyze) PureWhite else PureWhite.copy(alpha = 0.60f)
-                    )
+                    Text(strings.fecalAnalyze, fontWeight = FontWeight.SemiBold,
+                        color = if (canAnalyze) PureWhite else PureWhite.copy(alpha = 0.60f))
                 }
             }
 
             Spacer(Modifier.height(8.dp))
 
             // ── Result ────────────────────────────────────────────────
-            AnimatedVisibility(
-                visible = state.result != null,
-                enter   = fadeIn() + expandVertically()
-            ) {
+            AnimatedVisibility(visible = state.result != null, enter = fadeIn() + expandVertically()) {
                 state.result?.let { result ->
-                    // Look up full disease detail from the map
                     val diseaseInfo = diseaseInfoMap[result.label]
                     PredictionResultCard(
                         label            = result.label,
@@ -279,16 +231,16 @@ fun FecalDetectionScreen(
                         recommendationTl = result.recommendationTl,
                         isEnglish        = lang.isEnglish,
                         strings          = strings,
-                        descriptionEn    = diseaseInfo?.en?.description  ?: "",
-                        descriptionTl    = diseaseInfo?.tl?.description  ?: "",
-                        signsEn          = diseaseInfo?.en?.clinicalSigns ?: emptyList(),
-                        signsTl          = diseaseInfo?.tl?.clinicalSigns ?: emptyList(),
+                        descriptionEn    = diseaseInfo?.en?.description    ?: "",
+                        descriptionTl    = diseaseInfo?.tl?.description    ?: "",
+                        signsEn          = diseaseInfo?.en?.clinicalSigns  ?: emptyList(),
+                        signsTl          = diseaseInfo?.tl?.clinicalSigns  ?: emptyList(),
                         detailedRecsEn   = diseaseInfo?.en?.recommendations ?: emptyList(),
                         detailedRecsTl   = diseaseInfo?.tl?.recommendations ?: emptyList(),
-                        preventionEn     = diseaseInfo?.en?.prevention ?: emptyList(),
-                        preventionTl     = diseaseInfo?.tl?.prevention ?: emptyList(),
-                        treatmentEn      = diseaseInfo?.en?.treatment ?: emptyList(),
-                        treatmentTl      = diseaseInfo?.tl?.treatment ?: emptyList()
+                        preventionEn     = diseaseInfo?.en?.prevention     ?: emptyList(),
+                        preventionTl     = diseaseInfo?.tl?.prevention     ?: emptyList(),
+                        treatmentEn      = diseaseInfo?.en?.treatment      ?: emptyList(),
+                        treatmentTl      = diseaseInfo?.tl?.treatment      ?: emptyList()
                     )
                 }
             }
@@ -297,9 +249,6 @@ fun FecalDetectionScreen(
 }
 
 private fun uriToBitmap(context: android.content.Context, uri: Uri): Bitmap? = try {
-    if (Build.VERSION.SDK_INT < 28) {
-        BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
-    } else {
-        ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
-    }
+    if (Build.VERSION.SDK_INT < 28) BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
+    else ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
 } catch (e: Exception) { e.printStackTrace(); null }

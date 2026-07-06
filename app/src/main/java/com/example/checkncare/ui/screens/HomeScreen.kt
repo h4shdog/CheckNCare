@@ -1,5 +1,7 @@
 package com.example.checkncare.ui.screens
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,9 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -27,18 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.checkncare.R
-import com.example.checkncare.ui.language.AppFontSize
 import com.example.checkncare.ui.language.AppStrings
-import com.example.checkncare.ui.language.LocalFontSize
 import com.example.checkncare.ui.language.LocalLanguage
+import com.example.checkncare.ui.language.LocalTheme
 import com.example.checkncare.ui.navigation.Screen
 import com.example.checkncare.ui.theme.*
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    val lang      = LocalLanguage.current
-    val fontState = LocalFontSize.current
-    val strings   = AppStrings(lang.isEnglish)
+    val lang    = LocalLanguage.current
+    val theme   = LocalTheme.current
+    val strings = AppStrings(lang.isEnglish)
 
     val features = listOf(
         FeatureItem(strings.featureAudioTitle,   strings.featureAudioDesc,   Icons.Default.Mic,       Screen.AudioDetection.route, CrimsonRed),
@@ -50,13 +53,14 @@ fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(OffWhite)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LogoHeader(
-            strings    = strings,
-            isEnglish  = lang.isEnglish,
-            fontState  = fontState,
-            onToggle   = { lang.isEnglish = !lang.isEnglish }
+            strings       = strings,
+            isEnglish     = lang.isEnglish,
+            isDark        = theme.isDark,
+            onToggle      = { lang.isEnglish = !lang.isEnglish },
+            onThemeToggle = { theme.isDark = !theme.isDark }
         )
 
         LazyVerticalGrid(
@@ -74,7 +78,7 @@ fun HomeScreen(navController: NavController) {
         Text(
             text      = strings.footerLabel,
             style     = MaterialTheme.typography.labelSmall,
-            color     = TextHint,
+            color     = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier  = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -88,17 +92,30 @@ fun HomeScreen(navController: NavController) {
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun LogoHeader(
-    strings   : AppStrings,
-    isEnglish : Boolean,
-    fontState : com.example.checkncare.ui.language.FontSizeState,
-    onToggle  : () -> Unit
+    strings      : AppStrings,
+    isEnglish    : Boolean,
+    isDark       : Boolean,
+    onToggle     : () -> Unit,
+    onThemeToggle: () -> Unit
 ) {
+    val gradientColors = if (isDark)
+        listOf(DarkGradientStart, DarkGradientEnd)
+    else
+        listOf(GradientStart, GradientEnd)
+
+    // Rotate animation for the icon when toggling
+    val iconRotation by animateFloatAsState(
+        targetValue  = if (isDark) 180f else 0f,
+        animationSpec = tween(durationMillis = 400),
+        label        = "themeIconRotation"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Brush.verticalGradient(listOf(GradientStart, GradientEnd)))
+            .background(Brush.verticalGradient(gradientColors))
     ) {
-        // Subtle decorative circles
+        // Decorative circles
         Box(
             modifier = Modifier
                 .size(200.dp)
@@ -116,14 +133,34 @@ fun LogoHeader(
                 .background(PureWhite.copy(alpha = 0.04f))
         )
 
+        // ── Dark mode toggle — top right ────────────────────────────
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 48.dp, end = 16.dp)
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(PureWhite.copy(alpha = 0.18f))
+                .clickable { onThemeToggle() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector        = if (isDark) Icons.Default.WbSunny else Icons.Default.NightlightRound,
+                contentDescription = if (isDark) "Switch to light mode" else "Switch to dark mode",
+                tint               = PureWhite,
+                modifier           = Modifier
+                    .size(20.dp)
+                    .rotate(iconRotation)
+            )
+        }
+
         Column(
             modifier            = Modifier
                 .fillMaxWidth()
                 .padding(top = 56.dp, bottom = 28.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // ── Logo badge ──────────────────────────────────────────
+            // ── Logo ────────────────────────────────────────────────
             Image(
                 painter            = painterResource(id = R.drawable.checkncare_icon),
                 contentDescription = "CheckNCare logo",
@@ -171,86 +208,35 @@ fun LogoHeader(
                     .padding(horizontal = 4.dp, vertical = 4.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // English pill
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                if (isEnglish) PureWhite else Color.Transparent
-                            )
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text       = "English",
-                            style      = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (isEnglish) FontWeight.Bold else FontWeight.Normal,
-                            color      = if (isEnglish) CrimsonRed else PureWhite.copy(alpha = 0.80f)
-                        )
-                    }
-                    // Divider
-                    Text(
-                        text  = "/",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = PureWhite.copy(alpha = 0.60f),
-                        modifier = Modifier.padding(horizontal = 2.dp)
-                    )
-                    // Tagalog pill
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                if (!isEnglish) PureWhite else Color.Transparent
-                            )
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text       = "Tagalog",
-                            style      = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (!isEnglish) FontWeight.Bold else FontWeight.Normal,
-                            color      = if (!isEnglish) CrimsonRed else PureWhite.copy(alpha = 0.80f)
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(14.dp))
-
-            // ── Font Size Selector ──────────────────────────────────
-            Text(
-                text  = strings.fontSizeLabel,
-                style = MaterialTheme.typography.labelMedium,
-                color = PureWhite.copy(alpha = 0.80f)
-            )
-            Spacer(Modifier.height(6.dp))
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(PureWhite.copy(alpha = 0.15f))
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AppFontSize.entries.forEach { size ->
-                        val isSelected = fontState.current == size
+                    listOf("English" to true, "Tagalog" to false).forEach { (label, isEn) ->
+                        val selected = isEnglish == isEn
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(50))
-                                .background(if (isSelected) PureWhite else Color.Transparent)
-                                .clickable { fontState.current = size }
-                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                                .background(if (selected) PureWhite else Color.Transparent)
+                                .padding(horizontal = 16.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text       = if (isEnglish) size.labelEn else size.labelTl,
+                                text       = label,
                                 style      = MaterialTheme.typography.labelMedium,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color      = if (isSelected) CrimsonRed else PureWhite.copy(alpha = 0.80f)
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                                color      = if (selected) CrimsonRed else PureWhite.copy(alpha = 0.80f)
+                            )
+                        }
+                        if (isEn) {
+                            Text(
+                                text     = "/",
+                                style    = MaterialTheme.typography.labelMedium,
+                                color    = PureWhite.copy(alpha = 0.60f),
+                                modifier = Modifier.padding(horizontal = 2.dp)
                             )
                         }
                     }
                 }
             }
+
+            Spacer(Modifier.height(14.dp))
         }
     }
 }
@@ -274,7 +260,9 @@ fun FeatureCard(feature: FeatureItem, onClick: () -> Unit) {
             .aspectRatio(0.88f)
             .clickable(onClick = onClick),
         shape     = RoundedCornerShape(20.dp),
-        colors    = CardDefaults.cardColors(containerColor = PureWhite),
+        colors    = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
@@ -288,7 +276,7 @@ fun FeatureCard(feature: FeatureItem, onClick: () -> Unit) {
                 modifier         = Modifier
                     .size(60.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(feature.accent.copy(alpha = 0.10f)),
+                    .background(feature.accent.copy(alpha = 0.13f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -306,7 +294,7 @@ fun FeatureCard(feature: FeatureItem, onClick: () -> Unit) {
                 style      = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign  = TextAlign.Center,
-                color      = TextPrimary
+                color      = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(4.dp))
@@ -315,7 +303,7 @@ fun FeatureCard(feature: FeatureItem, onClick: () -> Unit) {
                 text      = feature.description,
                 style     = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                 textAlign = TextAlign.Center,
-                color     = TextSecond
+                color     = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(12.dp))

@@ -18,6 +18,8 @@ import com.example.checkncare.ui.language.FontSizeState
 import com.example.checkncare.ui.language.LanguageState
 import com.example.checkncare.ui.language.LocalFontSize
 import com.example.checkncare.ui.language.LocalLanguage
+import com.example.checkncare.ui.language.LocalTheme
+import com.example.checkncare.ui.language.ThemeState
 import com.example.checkncare.ui.navigation.Screen
 import com.example.checkncare.ui.screens.*
 import com.example.checkncare.ui.theme.CheckNCareTheme
@@ -27,12 +29,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // Single LanguageState and FontSizeState instances for the entire app lifetime
             val languageState = remember { LanguageState() }
             val fontSizeState = remember { FontSizeState() }
+            val themeState    = remember { ThemeState() }
+
             CompositionLocalProvider(
                 LocalLanguage provides languageState,
-                LocalFontSize  provides fontSizeState
+                LocalFontSize  provides fontSizeState,
+                LocalTheme     provides themeState
             ) {
                 CheckNCareTheme {
                     Surface(

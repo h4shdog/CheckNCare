@@ -50,13 +50,11 @@ fun HistoryScreen(
             confirmButton = {
                 TextButton(
                     onClick = { viewModel.clearAll(); showClearDlg = false },
-                    colors  = ButtonDefaults.textButtonColors(contentColor = ErrorRed)
+                    colors  = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) { Text(strings.historyClearConfirm, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showClearDlg = false }) {
-                    Text(strings.historyClearCancel)
-                }
+                TextButton(onClick = { showClearDlg = false }) { Text(strings.historyClearCancel) }
             }
         )
     }
@@ -85,54 +83,41 @@ fun HistoryScreen(
                 )
             )
         },
-        containerColor = OffWhite
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            // ── Search bar ────────────────────────────────────────────
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+
+            // ── Search bar ──────────────────────────────────────────
             OutlinedTextField(
                 value         = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    viewModel.search(it)
-                },
-                modifier    = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                onValueChange = { searchQuery = it; viewModel.search(it) },
+                modifier    = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
                 placeholder = { Text(strings.historySearch) },
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = CrimsonRed)
-                },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = CrimsonRed) },
                 shape  = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor      = CrimsonRed,
-                    unfocusedBorderColor    = MidGray,
-                    focusedContainerColor   = PureWhite,
-                    unfocusedContainerColor = PureWhite
+                    unfocusedBorderColor    = MaterialTheme.colorScheme.outline,
+                    focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedTextColor        = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor      = MaterialTheme.colorScheme.onSurface
                 ),
                 singleLine = true
             )
 
-            // ── Summary chip ──────────────────────────────────────────
+            // ── Summary chip ────────────────────────────────────────
             if (records.isNotEmpty()) {
-                val label = if (records.size == 1) strings.historyRecordSuffix
-                            else strings.historyRecordsSuffix
+                val label = if (records.size == 1) strings.historyRecordSuffix else strings.historyRecordsSuffix
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50))
-                        .background(SoftRed)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(horizontal = 14.dp, vertical = 5.dp)
                 ) {
-                    Text(
-                        "${records.size} $label",
-                        style      = MaterialTheme.typography.labelMedium,
-                        color      = CrimsonRed,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Text("${records.size} $label", style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.SemiBold)
                 }
                 Spacer(Modifier.height(8.dp))
             }
@@ -141,25 +126,16 @@ fun HistoryScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(CircleShape)
-                                .background(LightGray),
+                            modifier = Modifier.size(80.dp).clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint     = MidGray
-                            )
+                            Icon(Icons.Default.Search, contentDescription = null,
+                                modifier = Modifier.size(36.dp), tint = MaterialTheme.colorScheme.outline)
                         }
                         Spacer(Modifier.height(12.dp))
-                        Text(
-                            strings.historyEmpty,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = TextSecond
-                        )
+                        Text(strings.historyEmpty, style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             } else {
@@ -169,11 +145,7 @@ fun HistoryScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(records) { record ->
-                        HistoryCard(
-                            record    = record,
-                            strings   = strings,
-                            onDelete  = { viewModel.delete(record) }
-                        )
+                        HistoryCard(record = record, strings = strings, onDelete = { viewModel.delete(record) })
                     }
                 }
             }
@@ -197,22 +169,23 @@ fun HistoryCard(
             confirmButton = {
                 TextButton(
                     onClick = { onDelete(); showDeleteDlg = false },
-                    colors  = ButtonDefaults.textButtonColors(contentColor = ErrorRed)
+                    colors  = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) { Text(strings.historyDeleteConfirm, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDlg = false }) {
-                    Text(strings.historyDeleteCancel)
-                }
+                TextButton(onClick = { showDeleteDlg = false }) { Text(strings.historyDeleteCancel) }
             }
         )
     }
-    val isAudio     = record.type == "Audio"
-    val typeColor   = if (isAudio) CrimsonRed else Color(0xFF795548)
-    val typeBg      = if (isAudio) SoftRed    else Color(0xFFEFEBE9)
-    val typeIcon    = if (isAudio) Icons.Default.Mic else Icons.Default.CameraAlt
 
-    // Translate stored English keys to the active language
+    val isAudio  = record.type == "Audio"
+    val typeColor = if (isAudio) CrimsonRed else Color(0xFF795548)
+    val typeBg    = if (isAudio)
+        MaterialTheme.colorScheme.primaryContainer
+    else
+        MaterialTheme.colorScheme.secondaryContainer
+    val typeIcon  = if (isAudio) Icons.Default.Mic else Icons.Default.CameraAlt
+
     val displayType = if (isAudio) strings.historyTypeAudio else strings.historyTypeFecal
     val displayResult = when (record.result) {
         "Normal"               -> strings.historyResultNormal
@@ -224,30 +197,23 @@ fun HistoryCard(
         else                   -> record.result
     }
 
-    val isNormal    = record.result == "Normal"
-    val isUnknown   = record.result == "Unknown"
+    val isNormal  = record.result == "Normal"
+    val isUnknown = record.result == "Unknown"
     val resultColor = when {
         isNormal  -> SuccessGreen
-        isUnknown -> MidGray
-        else      -> ErrorRed
+        isUnknown -> MaterialTheme.colorScheme.outline
+        else      -> MaterialTheme.colorScheme.error
     }
 
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = PureWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier          = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Type icon badge
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(typeBg),
+                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(typeBg),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(typeIcon, contentDescription = null, tint = typeColor, modifier = Modifier.size(24.dp))
@@ -256,36 +222,24 @@ fun HistoryCard(
             Spacer(Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    verticalAlignment     = Alignment.CenterVertically,
+                Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier              = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        displayType,
-                        style      = MaterialTheme.typography.labelMedium,
-                        color      = typeColor,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        "${record.date}  ${record.time}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextHint
-                    )
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(displayType, style = MaterialTheme.typography.labelMedium,
+                        color = typeColor, fontWeight = FontWeight.SemiBold)
+                    Text("${record.date}  ${record.time}", style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    displayResult,
-                    style      = MaterialTheme.typography.titleMedium,
-                    color      = resultColor,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(displayResult, style = MaterialTheme.typography.titleMedium,
+                    color = resultColor, fontWeight = FontWeight.Bold)
             }
 
             Spacer(Modifier.width(4.dp))
 
             IconButton(onClick = { showDeleteDlg = true }, modifier = Modifier.size(36.dp)) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MidGray)
+                Icon(Icons.Default.Delete, contentDescription = "Delete",
+                    tint = MaterialTheme.colorScheme.outline)
             }
         }
     }

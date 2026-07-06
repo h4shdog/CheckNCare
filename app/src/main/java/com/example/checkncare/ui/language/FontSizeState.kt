@@ -2,18 +2,16 @@ package com.example.checkncare.ui.language
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 
-enum class AppFontSize(val scale: Float, val labelEn: String, val labelTl: String) {
-    SMALL      (0.85f, "Small",       "Maliit"    ),
-    MEDIUM     (1.00f, "Medium",      "Katamtaman"),
-    LARGE      (1.15f, "Large",       "Malaki"    ),
-    EXTRA_LARGE(1.30f, "Extra Large", "Napakalaki")
-}
-
+/**
+ * Holds the user-selected base font size in sp (range 1–50).
+ * Default is 14sp which matches the app's original bodyMedium size.
+ * Theme.kt scales the full typography proportionally from this value.
+ */
 class FontSizeState {
-    var current by mutableStateOf(AppFontSize.MEDIUM)
+    var sizeSp by mutableFloatStateOf(14f)
 }
 
 val LocalFontSize = compositionLocalOf { FontSizeState() }
