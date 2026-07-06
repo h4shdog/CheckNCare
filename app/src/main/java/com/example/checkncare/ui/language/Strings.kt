@@ -56,6 +56,16 @@ data class AppStrings(
     val historyClearBody: String,
     val historyClearConfirm: String,
     val historyClearCancel: String,
+    // Record type labels
+    val historyTypeAudio: String,
+    val historyTypeFecal: String,
+    // Result labels
+    val historyResultNormal: String,
+    val historyResultSick: String,
+    val historyResultCoccidiosis: String,
+    val historyResultNewcastle: String,
+    val historyResultSalmonella: String,
+    val historyResultUnknown: String,
 
     // ── About ─────────────────────────────────────────────────────────────────
     val aboutScreenTitle: String,
@@ -119,6 +129,14 @@ val englishStrings = AppStrings(
     historyClearBody      = "This will permanently delete all prediction records. Are you sure?",
     historyClearConfirm   = "Clear",
     historyClearCancel    = "Cancel",
+    historyTypeAudio      = "Audio",
+    historyTypeFecal      = "Fecal",
+    historyResultNormal   = "Normal",
+    historyResultSick     = "Sick",
+    historyResultCoccidiosis = "Coccidiosis",
+    historyResultNewcastle   = "Newcastle Disease",
+    historyResultSalmonella  = "Salmonella Infection",
+    historyResultUnknown     = "Unknown",
 
     aboutScreenTitle      = "Details",
     aboutAiTagline        = "AI-Powered Poultry Health Monitoring",
@@ -179,6 +197,14 @@ val tagalogStrings = AppStrings(
     historyClearBody      = "Permanenteng mabubura ang lahat ng rekord. Sigurado ka ba?",
     historyClearConfirm   = "Burahin",
     historyClearCancel    = "Kanselahin",
+    historyTypeAudio      = "Tilaok",
+    historyTypeFecal      = "Dumi",
+    historyResultNormal   = "Normal",
+    historyResultSick     = "May Sakit",
+    historyResultCoccidiosis = "Coccidiosis",
+    historyResultNewcastle   = "Newcastle Disease",
+    historyResultSalmonella  = "Salmonella Infection",
+    historyResultUnknown     = "Hindi Natukoy",
 
     aboutScreenTitle      = "Mga Detalye",
     aboutAiTagline        = "AI-Powered na Pagmamasid sa Kalusugan ng Manok",

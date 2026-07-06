@@ -191,8 +191,26 @@ fun HistoryCard(
     val typeColor   = if (isAudio) CrimsonRed else Color(0xFF795548)
     val typeBg      = if (isAudio) SoftRed    else Color(0xFFEFEBE9)
     val typeIcon    = if (isAudio) Icons.Default.Mic else Icons.Default.CameraAlt
-    val isNormal    = record.result.equals("Normal", ignoreCase = true)
-    val resultColor = if (isNormal) SuccessGreen else ErrorRed
+
+    // Translate stored English keys to the active language
+    val displayType = if (isAudio) strings.historyTypeAudio else strings.historyTypeFecal
+    val displayResult = when (record.result) {
+        "Normal"               -> strings.historyResultNormal
+        "Sick"                 -> strings.historyResultSick
+        "Coccidiosis"          -> strings.historyResultCoccidiosis
+        "Newcastle Disease"    -> strings.historyResultNewcastle
+        "Salmonella Infection" -> strings.historyResultSalmonella
+        "Unknown"              -> strings.historyResultUnknown
+        else                   -> record.result
+    }
+
+    val isNormal    = record.result == "Normal"
+    val isUnknown   = record.result == "Unknown"
+    val resultColor = when {
+        isNormal  -> SuccessGreen
+        isUnknown -> MidGray
+        else      -> ErrorRed
+    }
 
     Card(
         modifier  = Modifier.fillMaxWidth(),
@@ -224,7 +242,7 @@ fun HistoryCard(
                     modifier              = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        record.type,
+                        displayType,
                         style      = MaterialTheme.typography.labelMedium,
                         color      = typeColor,
                         fontWeight = FontWeight.SemiBold
@@ -237,7 +255,7 @@ fun HistoryCard(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    record.result,
+                    displayResult,
                     style      = MaterialTheme.typography.titleMedium,
                     color      = resultColor,
                     fontWeight = FontWeight.Bold

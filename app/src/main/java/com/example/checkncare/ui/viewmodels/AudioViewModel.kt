@@ -79,9 +79,7 @@ class AudioViewModel(application: Application) : AndroidViewModel(application) {
 
             _state.value = _state.value.copy(isAnalyzing = false, result = predictionResult)
 
-            if (effectiveLabel != "Unknown") {
-                saveToHistory(predictionResult)
-            }
+            saveToHistory(predictionResult)
         }
     }
 
