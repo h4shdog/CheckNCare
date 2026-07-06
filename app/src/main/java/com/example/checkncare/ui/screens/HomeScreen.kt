@@ -27,15 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.checkncare.R
+import com.example.checkncare.ui.language.AppFontSize
 import com.example.checkncare.ui.language.AppStrings
+import com.example.checkncare.ui.language.LocalFontSize
 import com.example.checkncare.ui.language.LocalLanguage
 import com.example.checkncare.ui.navigation.Screen
 import com.example.checkncare.ui.theme.*
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    val lang    = LocalLanguage.current
-    val strings = AppStrings(lang.isEnglish)
+    val lang      = LocalLanguage.current
+    val fontState = LocalFontSize.current
+    val strings   = AppStrings(lang.isEnglish)
 
     val features = listOf(
         FeatureItem(strings.featureAudioTitle,   strings.featureAudioDesc,   Icons.Default.Mic,       Screen.AudioDetection.route, CrimsonRed),
@@ -49,7 +52,12 @@ fun HomeScreen(navController: NavController) {
             .fillMaxSize()
             .background(OffWhite)
     ) {
-        LogoHeader(strings = strings, isEnglish = lang.isEnglish, onToggle = { lang.isEnglish = !lang.isEnglish })
+        LogoHeader(
+            strings    = strings,
+            isEnglish  = lang.isEnglish,
+            fontState  = fontState,
+            onToggle   = { lang.isEnglish = !lang.isEnglish }
+        )
 
         LazyVerticalGrid(
             columns               = GridCells.Fixed(2),
@@ -79,7 +87,12 @@ fun HomeScreen(navController: NavController) {
 // Header / Logo
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
-fun LogoHeader(strings: AppStrings, isEnglish: Boolean, onToggle: () -> Unit) {
+fun LogoHeader(
+    strings   : AppStrings,
+    isEnglish : Boolean,
+    fontState : com.example.checkncare.ui.language.FontSizeState,
+    onToggle  : () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,6 +211,43 @@ fun LogoHeader(strings: AppStrings, isEnglish: Boolean, onToggle: () -> Unit) {
                             fontWeight = if (!isEnglish) FontWeight.Bold else FontWeight.Normal,
                             color      = if (!isEnglish) CrimsonRed else PureWhite.copy(alpha = 0.80f)
                         )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // ── Font Size Selector ──────────────────────────────────
+            Text(
+                text  = strings.fontSizeLabel,
+                style = MaterialTheme.typography.labelMedium,
+                color = PureWhite.copy(alpha = 0.80f)
+            )
+            Spacer(Modifier.height(6.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(PureWhite.copy(alpha = 0.15f))
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AppFontSize.entries.forEach { size ->
+                        val isSelected = fontState.current == size
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50))
+                                .background(if (isSelected) PureWhite else Color.Transparent)
+                                .clickable { fontState.current = size }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text       = if (isEnglish) size.labelEn else size.labelTl,
+                                style      = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color      = if (isSelected) CrimsonRed else PureWhite.copy(alpha = 0.80f)
+                            )
+                        }
                     }
                 }
             }

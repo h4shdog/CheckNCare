@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.checkncare.ui.language.FontSizeState
 import com.example.checkncare.ui.language.LanguageState
+import com.example.checkncare.ui.language.LocalFontSize
 import com.example.checkncare.ui.language.LocalLanguage
 import com.example.checkncare.ui.navigation.Screen
 import com.example.checkncare.ui.screens.*
@@ -25,10 +27,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CheckNCareTheme {
-                // Single LanguageState instance for the entire app lifetime
-                val languageState = remember { LanguageState() }
-                CompositionLocalProvider(LocalLanguage provides languageState) {
+            // Single LanguageState and FontSizeState instances for the entire app lifetime
+            val languageState = remember { LanguageState() }
+            val fontSizeState = remember { FontSizeState() }
+            CompositionLocalProvider(
+                LocalLanguage provides languageState,
+                LocalFontSize  provides fontSizeState
+            ) {
+                CheckNCareTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color    = MaterialTheme.colorScheme.background

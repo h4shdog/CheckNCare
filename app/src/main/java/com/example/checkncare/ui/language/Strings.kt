@@ -18,6 +18,7 @@ data class AppStrings(
     val featureAboutTitle: String,
     val featureAboutDesc: String,
     val languageToggleLabel: String,
+    val fontSizeLabel: String,
 
     // ── Audio Detection ───────────────────────────────────────────────────────
     val audioScreenTitle: String,
@@ -56,6 +57,11 @@ data class AppStrings(
     val historyClearBody: String,
     val historyClearConfirm: String,
     val historyClearCancel: String,
+    // Single record delete dialog
+    val historyDeleteTitle: String,
+    val historyDeleteBody: String,
+    val historyDeleteConfirm: String,
+    val historyDeleteCancel: String,
     // Record type labels
     val historyTypeAudio: String,
     val historyTypeFecal: String,
@@ -95,6 +101,7 @@ val englishStrings = AppStrings(
     featureAboutTitle     = "Details",
     featureAboutDesc      = "App information",
     languageToggleLabel   = "English / Tagalog",
+    fontSizeLabel         = "Font Size",
 
     audioScreenTitle      = "Audio Detection",
     audioInfoText         = "Record chicken vocalizations to detect respiratory diseases.",
@@ -129,6 +136,10 @@ val englishStrings = AppStrings(
     historyClearBody      = "This will permanently delete all prediction records. Are you sure?",
     historyClearConfirm   = "Clear",
     historyClearCancel    = "Cancel",
+    historyDeleteTitle    = "Delete Record",
+    historyDeleteBody     = "Are you sure you want to delete this record?",
+    historyDeleteConfirm  = "Delete",
+    historyDeleteCancel   = "Cancel",
     historyTypeAudio      = "Audio",
     historyTypeFecal      = "Fecal",
     historyResultNormal   = "Normal",
@@ -163,6 +174,7 @@ val tagalogStrings = AppStrings(
     featureAboutTitle     = "Mga Detalye",
     featureAboutDesc      = "Impormasyon tungkol sa app",
     languageToggleLabel   = "Wika / Language",
+    fontSizeLabel         = "Laki ng Teksto",
 
     audioScreenTitle      = "Pagsusuri ng Tilaok",
     audioInfoText         = "I-record ang tunog ng manok upang matuklas ang mga sakit sa paghinga.",
@@ -197,6 +209,10 @@ val tagalogStrings = AppStrings(
     historyClearBody      = "Permanenteng mabubura ang lahat ng rekord. Sigurado ka ba?",
     historyClearConfirm   = "Burahin",
     historyClearCancel    = "Kanselahin",
+    historyDeleteTitle    = "Burahin ang Rekord",
+    historyDeleteBody     = "Sigurado ka bang gusto mong burahin ang rekord na ito?",
+    historyDeleteConfirm  = "Burahin",
+    historyDeleteCancel   = "Kanselahin",
     historyTypeAudio      = "Tilaok",
     historyTypeFecal      = "Dumi",
     historyResultNormal   = "Normal",

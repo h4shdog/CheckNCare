@@ -124,9 +124,9 @@ fun AboutScreen(navController: NavController) {
                     bullets = listOf(
                         "Kotlin & Jetpack Compose",
                         "TensorFlow Lite (MobileNetV3)",
-                        "Room Database",
+                        "SQLite Database",
                         "CameraX",
-                        "MVVM Architecture"
+                        "Microphone (Audio Recording)"
                     )
                 )
 

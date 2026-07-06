@@ -5,7 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import com.example.checkncare.ui.language.LocalFontSize
 
 private val LightColorScheme = lightColorScheme(
     primary            = CrimsonRed,
@@ -62,10 +66,34 @@ fun CheckNCareTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val fontScale   = LocalFontSize.current.current.scale
+
+    // Scale every text style's fontSize and lineHeight by the chosen multiplier
+    fun TextStyle.scaled() = copy(
+        fontSize   = fontSize   * fontScale,
+        lineHeight = lineHeight * fontScale
+    )
+
+    val scaledTypography = Typography.copy(
+        displayLarge  = Typography.displayLarge.scaled(),
+        displayMedium = Typography.displayMedium.scaled(),
+        headlineLarge = Typography.headlineLarge.scaled(),
+        headlineMedium= Typography.headlineMedium.scaled(),
+        headlineSmall = Typography.headlineSmall.scaled(),
+        titleLarge    = Typography.titleLarge.scaled(),
+        titleMedium   = Typography.titleMedium.scaled(),
+        titleSmall    = Typography.titleSmall.scaled(),
+        bodyLarge     = Typography.bodyLarge.scaled(),
+        bodyMedium    = Typography.bodyMedium.scaled(),
+        bodySmall     = Typography.bodySmall.scaled(),
+        labelLarge    = Typography.labelLarge.scaled(),
+        labelMedium   = Typography.labelMedium.scaled(),
+        labelSmall    = Typography.labelSmall.scaled()
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography  = Typography,
+        typography  = scaledTypography,
         content     = content
     )
 }

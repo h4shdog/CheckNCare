@@ -187,6 +187,26 @@ fun HistoryCard(
     strings : AppStrings,
     onDelete: () -> Unit
 ) {
+    var showDeleteDlg by remember { mutableStateOf(false) }
+
+    if (showDeleteDlg) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDlg = false },
+            title  = { Text(strings.historyDeleteTitle) },
+            text   = { Text(strings.historyDeleteBody) },
+            confirmButton = {
+                TextButton(
+                    onClick = { onDelete(); showDeleteDlg = false },
+                    colors  = ButtonDefaults.textButtonColors(contentColor = ErrorRed)
+                ) { Text(strings.historyDeleteConfirm, fontWeight = FontWeight.Bold) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDlg = false }) {
+                    Text(strings.historyDeleteCancel)
+                }
+            }
+        )
+    }
     val isAudio     = record.type == "Audio"
     val typeColor   = if (isAudio) CrimsonRed else Color(0xFF795548)
     val typeBg      = if (isAudio) SoftRed    else Color(0xFFEFEBE9)
@@ -264,7 +284,7 @@ fun HistoryCard(
 
             Spacer(Modifier.width(4.dp))
 
-            IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+            IconButton(onClick = { showDeleteDlg = true }, modifier = Modifier.size(36.dp)) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MidGray)
             }
         }

@@ -44,6 +44,10 @@ class FecalViewModel(application: Application) : AndroidViewModel(application) {
         _state.value = _state.value.copy(selectedImage = bitmap, result = null)
     }
 
+    fun resetState() {
+        _state.value = FecalUiState()
+    }
+
     fun analyzeImage() {
         val bitmap = _state.value.selectedImage ?: return
         _state.value = _state.value.copy(isAnalyzing = true)

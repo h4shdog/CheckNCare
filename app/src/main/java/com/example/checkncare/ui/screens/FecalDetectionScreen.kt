@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +59,11 @@ fun FecalDetectionScreen(
     val context = LocalContext.current
     val lang    = LocalLanguage.current
     val strings = AppStrings(lang.isEnglish)
+
+    // Clear any stale image/result from a previous visit every time this screen opens
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
 
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -225,16 +231,19 @@ fun FecalDetectionScreen(
             Spacer(Modifier.height(12.dp))
 
             // ── Analyze button ────────────────────────────────────────
+            val canAnalyze = state.selectedImage != null && !state.isAnalyzing
             Button(
-                onClick  = { viewModel.analyzeImage() },
+                onClick  = { if (canAnalyze) viewModel.analyzeImage() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                enabled  = state.selectedImage != null && !state.isAnalyzing,
+                enabled  = canAnalyze,
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(
                     containerColor         = DeepRed,
-                    disabledContainerColor = MidGray.copy(alpha = 0.5f)
+                    contentColor           = PureWhite,
+                    disabledContainerColor = MidGray.copy(alpha = 0.45f),
+                    disabledContentColor   = PureWhite.copy(alpha = 0.60f)
                 )
             ) {
                 if (state.isAnalyzing) {
@@ -244,9 +253,13 @@ fun FecalDetectionScreen(
                         strokeWidth = 2.5.dp
                     )
                     Spacer(Modifier.width(12.dp))
-                    Text(strings.fecalAnalyzing, fontWeight = FontWeight.SemiBold)
+                    Text(strings.fecalAnalyzing, fontWeight = FontWeight.SemiBold, color = PureWhite)
                 } else {
-                    Text(strings.fecalAnalyze, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text       = strings.fecalAnalyze,
+                        fontWeight = FontWeight.SemiBold,
+                        color      = if (canAnalyze) PureWhite else PureWhite.copy(alpha = 0.60f)
+                    )
                 }
             }
 
