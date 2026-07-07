@@ -24,6 +24,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -392,8 +395,12 @@ fun PredictionResultCard(
                     Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 3.dp)) {
                         Text("•", style = MaterialTheme.typography.bodyMedium, color = statusColor,
                             fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 8.dp, top = 1.dp))
-                        Text(sign, style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
+                        Text(
+                            text       = buildBoldSign(sign),
+                            style      = MaterialTheme.typography.bodyMedium,
+                            color      = MaterialTheme.colorScheme.onSurface,
+                            modifier   = Modifier.weight(1f)
+                        )
                     }
                 }
             }
@@ -451,6 +458,40 @@ fun PredictionResultCard(
                     }
                 }
             }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bold-highlight specific phrases inside clinical sign strings.
+// Add the phrase (or its start) to the set below to bold it.
+// ─────────────────────────────────────────────────────────────────────────────
+private val boldSignPhrases = setOf(
+    // English
+    "Bloody or watery droppings",
+    "White, pasty diarrhea sticking to the vent area",
+    "Greenish, watery droppings",
+    // Tagalog equivalents
+    "Madugo o matubig na dumi",
+    "Puting at malagkit na dumi na dumidikit sa puwitan",
+    "Maberde at matubig na dumi"
+)
+
+private fun buildBoldSign(sign: String): androidx.compose.ui.text.AnnotatedString {
+    return buildAnnotatedString {
+        val matchedPhrase = boldSignPhrases.firstOrNull { phrase ->
+            sign.contains(phrase, ignoreCase = true)
+        }
+        if (matchedPhrase != null) {
+            val start = sign.indexOf(matchedPhrase, ignoreCase = true)
+            val end   = start + matchedPhrase.length
+            append(sign.substring(0, start))
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(sign.substring(start, end))
+            }
+            append(sign.substring(end))
+        } else {
+            append(sign)
         }
     }
 }
