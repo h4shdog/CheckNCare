@@ -325,36 +325,33 @@ fun PredictionResultCard(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(statusBg)
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 12.dp, horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
                     verticalAlignment     = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text  = statusEmoji,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = statusColor
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        // Show "Possibility:" prefix for all results except Unknown
-                        if (!isUnknown) {
-                            Text(
-                                text       = if (isEnglish) "Possibility:" else "Posibilidad:",
-                                style      = MaterialTheme.typography.labelMedium,
-                                color      = statusColor,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                    if (!isUnknown) {
                         Text(
-                            text       = label,
-                            style      = MaterialTheme.typography.headlineSmall,
+                            text       = if (isEnglish) "Possibility:  " else "Posibilidad:  ",
+                            style      = MaterialTheme.typography.titleMedium,
                             color      = statusColor,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
+                    Text(
+                        text       = label,
+                        style      = MaterialTheme.typography.titleMedium,
+                        color      = statusColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text  = statusEmoji,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = statusColor
+                    )
                 }
             }
 
