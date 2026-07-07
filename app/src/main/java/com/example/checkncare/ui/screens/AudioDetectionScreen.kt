@@ -335,12 +335,23 @@ fun PredictionResultCard(
                         color = statusColor
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(
-                        text       = label,
-                        style      = MaterialTheme.typography.headlineSmall,
-                        color      = statusColor,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        // Show "Possibility:" prefix for all results except Unknown
+                        if (!isUnknown) {
+                            Text(
+                                text       = if (isEnglish) "Possibility:" else "Posibilidad:",
+                                style      = MaterialTheme.typography.labelMedium,
+                                color      = statusColor,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        Text(
+                            text       = label,
+                            style      = MaterialTheme.typography.headlineSmall,
+                            color      = statusColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
