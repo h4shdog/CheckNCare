@@ -38,7 +38,7 @@ import com.example.checkncare.ui.navigation.Screen
 import com.example.checkncare.ui.theme.*
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, onThemeToggle: () -> Unit) {
     val lang    = LocalLanguage.current
     val theme   = LocalTheme.current
     val strings = AppStrings(lang.isEnglish)
@@ -60,7 +60,7 @@ fun HomeScreen(navController: NavController) {
             isEnglish     = lang.isEnglish,
             isDark        = theme.isDark,
             onToggle      = { lang.isEnglish = !lang.isEnglish },
-            onThemeToggle = { theme.isDark = !theme.isDark }
+            onThemeToggle = onThemeToggle
         )
 
         LazyVerticalGrid(
