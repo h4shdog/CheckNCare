@@ -38,6 +38,12 @@ data class AppStrings(
     val fecalAnalyze: String,
     val fecalAnalyzing: String,
 
+    // ── Permission messages ───────────────────────────────────────────────────
+    val permMicRequired: String,
+    val permCameraRequired: String,
+    val permGalleryRequired: String,
+    val permCameraFileError: String,
+
     // ── Result Card ───────────────────────────────────────────────────────────
     val resultConfidence: String,
     val resultRecommendation: String,
@@ -119,6 +125,11 @@ val englishStrings = AppStrings(
     fecalAnalyze          = "Analyze Image",
     fecalAnalyzing        = "Analyzing…",
 
+    permMicRequired       = "Microphone permission is required",
+    permCameraRequired    = "Camera permission is required",
+    permGalleryRequired   = "Storage permission is required to access gallery",
+    permCameraFileError   = "Could not create image file",
+
     resultConfidence      = "Confidence",
     resultRecommendation  = "Actions to Take",
     resultDescription     = "About This Disease",
@@ -191,6 +202,11 @@ val tagalogStrings = AppStrings(
     fecalCamera           = "Camera",
     fecalAnalyze          = "Suriin ang Larawan",
     fecalAnalyzing        = "Sinusuri…",
+
+    permMicRequired       = "Kailangan ang pahintulot sa mikropono",
+    permCameraRequired    = "Kailangan ang pahintulot sa camera",
+    permGalleryRequired   = "Kailangan ang pahintulot sa storage para ma-access ang gallery",
+    permCameraFileError   = "Hindi malikha ang image file",
 
     resultConfidence      = "Antas ng Katiyakan",
     resultRecommendation  = "Mga dapat Gawin",

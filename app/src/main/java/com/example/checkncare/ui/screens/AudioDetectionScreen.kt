@@ -52,7 +52,7 @@ fun AudioDetectionScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) viewModel.startRecording()
-        else Toast.makeText(context, "Microphone permission is required", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(context, strings.permMicRequired, Toast.LENGTH_SHORT).show()
     }
 
     fun onMicButtonClicked() {

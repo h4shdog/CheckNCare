@@ -79,9 +79,9 @@ fun FecalDetectionScreen(
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
             createCameraUri()?.let { uri -> cameraImageUri = uri; cameraLauncher.launch(uri) }
-                ?: Toast.makeText(context, "Could not create image file", Toast.LENGTH_SHORT).show()
+                ?: Toast.makeText(context, strings.permCameraFileError, Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, strings.permCameraRequired, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,7 +101,7 @@ fun FecalDetectionScreen(
         if (granted) {
             galleryLauncher.launch("image/*")
         } else {
-            Toast.makeText(context, "Storage permission is required to access gallery", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, strings.permGalleryRequired, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -202,7 +202,7 @@ fun FecalDetectionScreen(
                             context, Manifest.permission.CAMERA) == PermissionChecker.PERMISSION_GRANTED
                         if (granted) {
                             createCameraUri()?.let { uri -> cameraImageUri = uri; cameraLauncher.launch(uri) }
-                                ?: Toast.makeText(context, "Could not create image file", Toast.LENGTH_SHORT).show()
+                                ?: Toast.makeText(context, strings.permCameraFileError, Toast.LENGTH_SHORT).show()
                         } else permissionLauncher.launch(Manifest.permission.CAMERA)
                     },
                     modifier = Modifier.weight(1f),
