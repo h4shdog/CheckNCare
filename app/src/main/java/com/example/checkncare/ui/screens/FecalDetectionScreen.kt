@@ -89,6 +89,22 @@ fun FecalDetectionScreen(
         uri?.let { uriToBitmap(context, it)?.let { b -> viewModel.onImageSelected(b.copy(Bitmap.Config.ARGB_8888, true)) } }
     }
 
+    // Permission required to read gallery images:
+    //   Android 13+ (API 33+) → READ_MEDIA_IMAGES
+    //   Android 12 and below  → READ_EXTERNAL_STORAGE
+    val galleryPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        Manifest.permission.READ_MEDIA_IMAGES
+    else
+        Manifest.permission.READ_EXTERNAL_STORAGE
+
+    val galleryPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            galleryLauncher.launch("image/*")
+        } else {
+            Toast.makeText(context, "Storage permission is required to access gallery", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -163,7 +179,13 @@ fun FecalDetectionScreen(
             // ── Camera / Gallery buttons ──────────────────────────────
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(
-                    onClick  = { galleryLauncher.launch("image/*") },
+                    onClick  = {
+                        val granted = ContextCompat.checkSelfPermission(
+                            context, galleryPermission
+                        ) == PermissionChecker.PERMISSION_GRANTED
+                        if (granted) galleryLauncher.launch("image/*")
+                        else galleryPermissionLauncher.launch(galleryPermission)
+                    },
                     modifier = Modifier.weight(1f),
                     shape    = RoundedCornerShape(12.dp),
                     colors   = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
