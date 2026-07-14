@@ -85,7 +85,7 @@ class AudioViewModel(application: Application) : AndroidViewModel(application) {
             val result = classifier.classify(audioData)
 
             // If confidence is below 60%, treat it as Unknown and skip saving to history
-            val effectiveLabel = if (result.confidence < 0.50f) "Unknown" else result.label
+            val effectiveLabel = if (result.confidence < 0.60f) "Unknown" else result.label
             val (recEn, recTl) = getRecommendations(effectiveLabel)
 
             val predictionResult = AudioPredictionResult(
