@@ -8,6 +8,8 @@ import com.example.checkncare.data.PredictionRecord
 import com.example.checkncare.data.PredictionRepository
 import com.example.checkncare.tflite.AudioClassifier
 import com.example.checkncare.util.AudioRecorder
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +21,8 @@ data class AudioUiState(
     val isRecording: Boolean = false,
     val isAnalyzing: Boolean = false,
     val result: AudioPredictionResult? = null,
-    val recordingTooShort: Boolean = false
+    val recordingTooShort: Boolean = false,
+    val recordingElapsedSeconds: Int = 0
 )
 
 data class AudioPredictionResult(
@@ -37,6 +40,7 @@ class AudioViewModel(application: Application) : AndroidViewModel(application) {
     private val classifier = AudioClassifier(application)
     private val repository: PredictionRepository
     private var recordingStartTime: Long = 0L
+    private var timerJob: Job? = null
 
     init {
         val dao = AppDatabase.getDatabase(application).predictionDao()
@@ -45,11 +49,25 @@ class AudioViewModel(application: Application) : AndroidViewModel(application) {
 
     fun startRecording() {
         recordingStartTime = System.currentTimeMillis()
-        _state.value = _state.value.copy(isRecording = true, result = null, recordingTooShort = false)
+        _state.value = _state.value.copy(
+            isRecording = true,
+            result = null,
+            recordingTooShort = false,
+            recordingElapsedSeconds = 0
+        )
         recorder.startRecording()
+        timerJob = viewModelScope.launch {
+            while (true) {
+                delay(1_000L)
+                val elapsed = ((System.currentTimeMillis() - recordingStartTime) / 1_000L).toInt()
+                _state.value = _state.value.copy(recordingElapsedSeconds = elapsed)
+            }
+        }
     }
 
     fun stopRecording() {
+        timerJob?.cancel()
+        timerJob = null
         val elapsedMs = System.currentTimeMillis() - recordingStartTime
         if (elapsedMs < 5_000L) {
             // Recording is too short — stop the recorder but don't analyze

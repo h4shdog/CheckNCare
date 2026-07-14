@@ -139,12 +139,28 @@ fun AudioDetectionScreen(
                         .background(MaterialTheme.colorScheme.errorContainer)
                         .padding(horizontal = 20.dp, vertical = 8.dp)
                 ) {
-                    Text(
-                        text       = strings.audioRecordingLabel,
-                        style      = MaterialTheme.typography.labelLarge,
-                        color      = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    val elapsed = state.recordingElapsedSeconds
+                    val minutes = elapsed / 60
+                    val seconds = elapsed % 60
+                    val timerText = "%d:%02d".format(minutes, seconds)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text       = strings.audioRecordingLabel,
+                            style      = MaterialTheme.typography.labelLarge,
+                            color      = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            text       = timerText,
+                            style      = MaterialTheme.typography.labelLarge,
+                            color      = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
